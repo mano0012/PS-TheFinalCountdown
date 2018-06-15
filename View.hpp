@@ -7,22 +7,19 @@ using namespace std;
 
 class Presenter;
 
-class View{
+class View {
     private:
         Presenter *p;
     public:
+        void setPresenter(Presenter *p);
 
-        int showMenu();
-
-        int showMenuAdmin();
-
-        void setPresenter(Presenter *pres);
-
-        /*TODO: View para cadastro de evento e remoção de evento
-        View para busca de evento e listarEvento
-        */
-
-        void bye();
+        void start(View *view);
 };
+
+/*class menuView {
+
+
+
+}*/
 
 #endif

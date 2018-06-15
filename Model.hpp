@@ -62,6 +62,7 @@ typedef struct b {
 /*A arvore ajudará a dar o resultado em ordem alfabetica e o usuario nao precisará
 digitar o nome todo para encontrar o evento*/
 
+//Seçao
 class Model{
     private:
         string user;
