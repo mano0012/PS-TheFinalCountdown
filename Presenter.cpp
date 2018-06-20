@@ -1,18 +1,38 @@
-#include "Presenter.hpp"
+#ifndef PRESENTER_HPP_
+#define PRESENTER_HPP_
+#include "Contract.hpp"
+#include "Model.cpp"
 
-void Presenter::setView(View *view){
-    v = view;
-}
+class menuPresenter : public ContractMenu::Presenter{
+    public:
+        void start(){
+            switch(view->showMenu()){
+                case 0:
+                    view->change("BYE");
+                break;
+                case 1:
+                    view->change("Insere");
+                break;
+                case 2:
+                    view->change("Lista");
+                break;
+            }
+        }
 
-void Presenter::start(){
-    v->start(NULL);
-}
+        void setView(ContractMenu::View *v){
+            view = v;
+        }
+};
 
-void Presenter::teste(){
-    cout << "DEU CARAI" << endl;
-}
+class inserePresenter : public ContractInsere::Presenter{
+    void setView(ContractInsere::View *v){
+        view = v;
+    }
 
-/*TODO: Funçoes para cadastro de evento, remoção e buscas
-Na remoção, será pega a informação da view sobre qual evento remover
-Depois sera feita uma busca e então a remoção
-*/
+    void start(){
+        cout << "Criado: " << view->criaEvento() << endl;
+    }
+
+};
+
+#endif
