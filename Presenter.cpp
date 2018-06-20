@@ -3,36 +3,37 @@
 #include "Contract.hpp"
 #include "Model.cpp"
 
-class menuPresenter : public ContractMenu::Presenter{
+class menuPresenter : public ContractMenuPresenter{
     public:
         void start(){
             switch(view->showMenu()){
                 case 0:
-                    view->change("BYE");
+                    view->changeView("BYE");
                 break;
                 case 1:
-                    view->change("Insere");
+                    view->changeView("Insere");
                 break;
                 case 2:
-                    view->change("Lista");
+                    view->changeView("Lista");
                 break;
             }
         }
 
-        void setView(ContractMenu::View *v){
+        void setView(ContractMenuView *v){
             view = v;
         }
 };
 
-class inserePresenter : public ContractInsere::Presenter{
-    void setView(ContractInsere::View *v){
-        view = v;
-    }
+class inserePresenter : public ContractInserePresenter{
+    public:
 
-    void start(){
-        cout << "Criado: " << view->criaEvento() << endl;
-    }
+        void setView(ContractInsereView *v){
+            view = v;
+        }
 
+        void start(){
+            cout << "Criado: " << view->criaEvento() << endl;
+        }
 };
 
 #endif

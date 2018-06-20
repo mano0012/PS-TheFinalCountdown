@@ -1,32 +1,17 @@
 #include "Contract.hpp"
 #include "Presenter.cpp"
 
-class insereView : public ContractInsere::View{
+//Fabrica que irá criar as Views
+class FactoryView{
     public:
-        ContractInsere::Presenter *presenter;
-
-        void start(ContractMenu::View *last){
-            delete last;
-            setPresenter();
-        }
-
-        void setPresenter(){
-            presenter = new inserePresenter;
-            presenter->setView(this);
-            presenter->start();
-        }
-
-        int criaEvento(){
-            cout << "Evento ";
-            return 0;
-        }
+        static ContractView * cria(string opcao);
 };
 
-class menuView : public ContractMenu::View {
+class menuView : public ContractMenuView {
     public:
-        ContractMenu::Presenter *presenter;
-
-        void start(){
+        ContractMenuPresenter *presenter;
+        void start(ContractView *last){
+            if (last!=NULL) delete last;
             setPresenter();
         }
 
@@ -50,14 +35,43 @@ class menuView : public ContractMenu::View {
             return op;
         }
 
-        void change(string option){
-            ContractInsere::View *newView;
+        void changeView(string option){
+            ContractView *newView;
             delete presenter;
 
-            newView = new insereView;
+            newView = FactoryView::cria("INSERE");
             newView->start(this);
         }
 
 };
 
+class insereView : public ContractInsereView{
+    public:
+        ContractInserePresenter *presenter;
+        void start(ContractView *last){
+            delete last;
+            setPresenter();
+        }
 
+        void setPresenter(){
+            presenter = new inserePresenter;
+            presenter->setView(this);
+            presenter->start();
+        }
+
+        int criaEvento(){
+            cout << "Evento ";
+            return 0;
+        }
+
+        void changeView(string option){
+            cout << "Nao implementado" << endl;
+        }
+};
+
+//Função de criação
+ContractView * FactoryView::cria(string opcao){
+    if (opcao=="MENU") return new menuView;
+    else if (opcao=="INSERE") return new insereView;
+    else return NULL;
+}
