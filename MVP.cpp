@@ -3,12 +3,9 @@
 #include "Presenter.cpp"
 using namespace std;
 
-//Considerar usar FactoryMethod
-
 main(){
-    menuView *v;
+    ContractView *v;
 
-    v = new menuView;
-    v->start();
-
+    v = FactoryView::cria("MENU");
+    v->start(NULL);
 }

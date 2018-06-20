@@ -5,39 +5,43 @@
 
 using namespace std;
 
-class ContractMenu{
+//Funcoes comuns a todas as Views
+class ContractView{
     public:
-        class View{
-            public:
-                virtual void change(string option) = 0;
-                virtual void setPresenter() = 0;
+        virtual void changeView(string option) = 0;
+        virtual void start(ContractView *last) = 0;
+        virtual void setPresenter() = 0;
+};
+//Fim
+
+//Contrato-Menu
+class ContractMenuView : public ContractView{
+    public:
+        public:
                 virtual int showMenu() = 0;
-                virtual void start() = 0;
-        };
-
-        class Presenter{
-            public:
-                ContractMenu::View *view;
-                virtual void setView(ContractMenu::View *v) = 0;
-                virtual void start() = 0;
-        };
 };
 
-class ContractInsere{
+class ContractMenuPresenter{
+            public:
+                ContractMenuView *view;
+                virtual void setView(ContractMenuView *v) = 0;
+                virtual void start() = 0;
+};
+//Fim Contrato-Menu
+
+//Contrato InserirEvento
+class ContractInsereView : public ContractView{
     public:
-        class View{
-            public:
-                virtual void start(ContractMenu::View *last) = 0;
-                virtual int criaEvento() = 0; //Utilizar Builder
-        };
+        virtual int criaEvento() = 0; //Utilizar Builder
 
-        class Presenter{
-            public:
-                ContractInsere::View *view;
-
-                virtual void setView(ContractInsere::View *v) = 0;
-                virtual void start() = 0;
-
-        };
 };
+
+class ContractInserePresenter {
+    public:
+        ContractInsereView *view;
+        virtual void setView(ContractInsereView *v) = 0;
+        virtual void start() = 0;
+};
+//Fim ContratoInserirEvento
+
 #endif
