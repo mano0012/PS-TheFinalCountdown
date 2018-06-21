@@ -32,14 +32,22 @@ class Data{
 //Isso é para poder mostrar os eventos em uma determinada data em ordem alfabetica
 //Ou eventos com um determinado nome em ordem de data
 class Evento{
-    private:
+    public:
         int id;
         string nome;
         string local;
         Data *dataInicio;
         Data *dataFim;
         bool isVisible;
-    public:
+
+        Evento(){
+            dataInicio = new Data;
+            dataFim = new Data;
+        }
+
+        /*void setNome(string nome){
+            this.nome = nome;
+        }*/
 
         //Terminar o evento
 
@@ -52,10 +60,12 @@ typedef struct a {
 } no;
 
 typedef struct b {
-    Evento *e;
+    Evento *evento;
     struct b *prox;
     struct b *ant;
 } lista;
+
+lista *l = NULL;
 
 //Para armazenar de acordo com a data, utilizar apenas uma lista
 //Para armazenar de acordo com o nome, utilizar Árvore

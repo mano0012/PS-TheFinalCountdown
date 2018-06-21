@@ -4,17 +4,12 @@
 //Fabrica que irá criar as Views
 class FactoryView{
     public:
-        static ContractView * cria(string opcao);
+        static ContractView * cria(classView opcao);
 };
 
 class menuView : public ContractMenuView {
     public:
         ContractMenuPresenter *presenter;
-        void start(ContractView *last){
-            if (last!=NULL) delete last;
-            setPresenter();
-        }
-
 
         void setPresenter(){
             presenter = new menuPresenter;
@@ -35,11 +30,11 @@ class menuView : public ContractMenuView {
             return op;
         }
 
-        void changeView(string option){
+        void changeView(classView option){
             ContractView *newView;
             delete presenter;
 
-            newView = FactoryView::cria("INSERE");
+            newView = FactoryView::cria(option);
             newView->start(this);
         }
 
@@ -48,10 +43,6 @@ class menuView : public ContractMenuView {
 class insereView : public ContractInsereView{
     public:
         ContractInserePresenter *presenter;
-        void start(ContractView *last){
-            delete last;
-            setPresenter();
-        }
 
         void setPresenter(){
             presenter = new inserePresenter;
@@ -59,19 +50,61 @@ class insereView : public ContractInsereView{
             presenter->start();
         }
 
-        int criaEvento(){
-            cout << "Evento ";
-            return 0;
+        void criaEvento(Evento *evento){
+            int data;
+            cout << "Digite o nome do evento: ";
+            cin >> evento->nome;
+            cout << "Digite o local do evento: ";
+            cin >> evento->local;
+            cout << "Digite o dia de inicio do Evento: ";
+            cin >> data;
+            evento->dataInicio->setDia(data);
+            cout << "Digite o mes de inicio do Evento: ";
+            cin >> data;
+            evento->dataInicio->setMes(data);
+            cout << "Digite o ano de inicio do Evento: ";
+            cin >> data;
+            evento->dataInicio->setAno(data);
+
+            cout << "Digite o dia de finalização do Evento: ";
+            cin >> data;
+            evento->dataFim->setDia(data);
+            cout << "Digite o mes de finalização do Evento: ";
+            cin >> data;
+            evento->dataFim->setMes(data);
+            cout << "Digite o ano de finalização do Evento: ";
+            cin >> data;
+            evento->dataFim->setAno(data);
+
+            evento->isVisible = false;
+
         }
 
-        void changeView(string option){
-            cout << "Nao implementado" << endl;
+        void changeView(classView option){
+            ContractView *newView;
+            delete presenter;
+
+            newView = FactoryView::cria(option);
+            newView->start(this);
+
         }
 };
 
 //Função de criação
-ContractView * FactoryView::cria(string opcao){
-    if (opcao=="MENU") return new menuView;
+ContractView * FactoryView::cria(classView opcao){
+    switch(opcao){
+        case MENU:
+            return new menuView;
+        break;
+        case INSERE:
+            return new insereView;
+        break;
+
+        default:
+            return NULL;
+        break;
+    /*if (opcao=="MENU") return new menuView;
     else if (opcao=="INSERE") return new insereView;
-    else return NULL;
+    else return NULL;*/
+    }
 }

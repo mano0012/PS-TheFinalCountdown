@@ -37,6 +37,58 @@ string Data::getData(){
     return d + "/" + m + "/" + a;
 }
 
+Evento * criaEvento(){
+    Evento *evento = new Evento;
+
+    return evento;
+}
+
+void inserirEventoData(Evento *evento){
+    lista *aux = (lista *)malloc(sizeof(lista));
+    lista *temp;
+    bool inseriu = false;
+
+
+    aux->ant = NULL;
+    aux->prox = NULL;
+    aux->evento = evento;
+
+    if (l!=NULL){
+        temp = l;
+
+        if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+            aux->prox = temp;
+            temp->ant = aux;
+            l = aux;
+        } else {
+            while (!inseriu){
+                if (temp->prox != NULL){
+                    temp = temp->prox;
+
+                    if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+                        aux->prox = temp;
+                        aux->ant = temp->ant;
+                        temp->ant->prox = aux;
+                        temp->ant = aux;
+                        inseriu = true;
+                    }
+                } else {
+                    temp->prox = aux;
+                    aux->ant = temp;
+                    inseriu = true;
+                }
+            }
+
+        }
+    } else {
+        l = aux;
+    }
+}
+
+void inserirEventoNome(Evento *evento){
+
+}
+
 //Os eventos estarao ordenados por nome
 void Model::inserirEventoArvore(Evento *e){
 

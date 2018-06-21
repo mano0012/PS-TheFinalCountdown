@@ -6,6 +6,6 @@ using namespace std;
 main(){
     ContractView *v;
 
-    v = FactoryView::cria("MENU");
+    v = FactoryView::cria(MENU);
     v->start(NULL);
 }

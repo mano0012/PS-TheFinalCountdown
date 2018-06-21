@@ -1,20 +1,19 @@
 #ifndef PRESENTER_HPP_
 #define PRESENTER_HPP_
 #include "Contract.hpp"
-#include "Model.cpp"
-
+//#include "Model.hpp"
 class menuPresenter : public ContractMenuPresenter{
     public:
         void start(){
             switch(view->showMenu()){
                 case 0:
-                    view->changeView("BYE");
+                    view->changeView(MENU);//Mudar qual classe
                 break;
                 case 1:
-                    view->changeView("Insere");
+                    view->changeView(INSERE);
                 break;
                 case 2:
-                    view->changeView("Lista");
+                    view->changeView(MENU);//Mudar qual classe
                 break;
             }
         }
@@ -32,7 +31,10 @@ class inserePresenter : public ContractInserePresenter{
         }
 
         void start(){
-            cout << "Criado: " << view->criaEvento() << endl;
+            evento = criaEvento();
+            view->criaEvento(evento);
+            inserirEventoData(evento);
+            view->changeView(MENU);
         }
 };
 
