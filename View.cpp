@@ -38,6 +38,10 @@ class menuView : public ContractMenuView {
             newView->start(this);
         }
 
+        void endOfLife(){
+            cout << "ADEUS\n" << endl;
+        }
+
 };
 
 class insereView : public ContractInsereView{
@@ -76,6 +80,9 @@ class insereView : public ContractInsereView{
             cin >> data;
             evento->dataFim->setAno(data);
 
+            cout << "Digite a descrição do evento: ";
+            cin >> evento->desc;
+
             evento->isVisible = false;
 
         }
@@ -90,6 +97,101 @@ class insereView : public ContractInsereView{
         }
 };
 
+class listaView : public ContractListaView {
+
+    void setPresenter(){
+            presenter = new inserePresenter;
+            presenter->setView(this);
+            presenter->start();
+    }
+
+    int showMenu(){
+        int op;
+        cout << "1 - Buscar por nome\n2- Buscar por data\nSelecione a opcao: ";
+
+        cin >> op;
+        while (op!=1 || op!=2){
+            cout << "Opcao invalida, digite novamente: ";
+            cin >> op;
+        }
+
+        return op;
+
+    }
+
+    int mostraListaEventos(lista *eventos){
+        int i = 1;
+        if (eventos!=NULL){
+            cout << endl << "Nao ha eventos" << endl;
+            return 0;
+        }
+
+        while (eventos != NULL){
+            cout << "--------------------------------------" << endl;
+            cout << "ID: " << i << endl;
+            cout << "Nome: " << eventos->evento->nome << endl;
+            //cout << "Local: " << eventos->evento->local << endl;
+            cout << "Data inicio: " << eventos->evento->dataInicio->getData() << endl;
+            cout << "Data fim: " << eventos->evento->dataFim->getData() << endl;
+            //cout << "Descricao: " << eventos->evento->desc << endl;
+            cout << "--------------------------------------" << endl;
+
+            i++;
+            eventos = eventos->prox;
+        }
+
+        cout << "Selecione um evento: " << endl;
+        cin >> i;
+
+        return i;
+
+    }
+
+    void mostraEventoEspecifico(Evento *evento){
+        cout << "--------------------------------------" << endl;
+        cout << "Nome: " << evento->nome << endl;
+        cout << "Local: " << evento->local << endl;
+        cout << "Data inicio: " << evento->dataInicio->getData() << endl;
+        cout << "Data fim: " << evento->dataFim->getData() << endl;
+        cout << "Descricao: " << evento->desc << endl;
+        cout << "--------------------------------------" << endl;
+    }
+
+    string buscaNome(){
+        string nome;
+        cout << "Digite o nome do evento: ";
+        cin >> nome;
+        return nome;
+    }
+
+    Data buscaData(){
+        int data;
+        Data dataEvento;
+
+        cout << "Digite o dia de inicio do Evento: ";
+        cin >> data;
+        dataEvento.setDia(data);
+        cout << "Digite o mes de inicio do Evento: ";
+        cin >> data;
+        dataEvento.setMes(data);
+        cout << "Digite o ano de inicio do Evento: ";
+        cin >> data;
+        dataEvento.setAno(data);
+
+        return dataEvento;
+    }
+
+    void changeView(classView option){
+        ContractView *newView;
+        delete presenter;
+
+        newView = FactoryView::cria(option);
+        newView->start(this);
+
+    }
+
+}
+
 //Função de criação
 ContractView * FactoryView::cria(classView opcao){
     switch(opcao){
@@ -99,7 +201,9 @@ ContractView * FactoryView::cria(classView opcao){
         case INSERE:
             return new insereView;
         break;
-
+        case LISTAR:
+            return new listaView;
+        break;
         default:
             return NULL;
         break;

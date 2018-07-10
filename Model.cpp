@@ -43,7 +43,7 @@ Evento * criaEvento(){
     return evento;
 }
 
-void inserirEventoData(Evento *evento){
+void inserirEvento(Evento *evento){
     lista *aux = (lista *)malloc(sizeof(lista));
     lista *temp;
     bool inseriu = false;
@@ -53,13 +53,13 @@ void inserirEventoData(Evento *evento){
     aux->prox = NULL;
     aux->evento = evento;
 
-    if (l!=NULL){
-        temp = l;
+    if (listaEventos!=NULL){
+        temp = listaEventos;
 
         if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
             aux->prox = temp;
             temp->ant = aux;
-            l = aux;
+            listaEventos = aux;
         } else {
             while (!inseriu){
                 if (temp->prox != NULL){
@@ -81,22 +81,56 @@ void inserirEventoData(Evento *evento){
 
         }
     } else {
-        l = aux;
+        listaEventos = aux;
     }
 }
 
-void inserirEventoNome(Evento *evento){
+void gravaLista(){
+    FILE *arq;
+    lista *temp = listaEventos;
 
+    arq = fopen("Eventos.txt","wb");
+
+    while (temp!=NULL){
+        fwrite(temp->evento,sizeof(Evento),1,arq);
+        temp = temp->prox;
+    }
 }
 
-//Os eventos estarao ordenados por nome
-void Model::inserirEventoArvore(Evento *e){
+void recuperaLista(){
+    FILE *arq;
+    Evento *evento = new Evento;
 
-}
-//Os eventos estarao ordenados por data
-void Model::inserirEventoLista(Evento *e){
+    arq = fopen("Eventos.txt","rb");
 
+    if (arq!=NULL){
+        while (!feof(arq)){
+            fread(evento,sizeof(Evento),1,arq);
+            inserirEvento(evento);
+        }
+    }
 }
+
+void libera(){
+    lista *temp;
+
+    temp = listaEventos;
+
+    while (listaEventos!=NULL){
+        listaEventos = listaEventos->prox;
+        free (temp);
+        temp = listaEventos;
+    }
+
+    temp = listaBusca;
+
+    while (listaBusca != NULL){
+        listaBusca = listaBusca->prox;
+        free (temp);
+        temp = listaBusca;
+    }
+}
+
 /*TODO: Funções para busca de evento, criar a lista de eventos(ou arvore vide a forma de busca)
 Função para remover.
 A função de busca irá sempre retornar o ondereço do registo, pois, caso seja para ser exibido,
@@ -106,7 +140,3 @@ pedir ao model que remova o endereço.
 Caso seja inserido um evento com uma data no passado, exibir erro
 */
 
-bool Model::autentica(string u, string p){
-    if (user == u && pass == p) return true;
-    return false;
-}

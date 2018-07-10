@@ -33,9 +33,9 @@ class Data{
 //Ou eventos com um determinado nome em ordem de data
 class Evento{
     public:
-        int id;
         string nome;
         string local;
+        string desc;
         Data *dataInicio;
         Data *dataFim;
         bool isVisible;
@@ -65,42 +65,14 @@ typedef struct b {
     struct b *ant;
 } lista;
 
-lista *l = NULL;
-
+lista *listaEventos = NULL;
+lista *listaBusca = NULL;
 //Para armazenar de acordo com a data, utilizar apenas uma lista
 //Para armazenar de acordo com o nome, utilizar Árvore
 /*A arvore ajudará a dar o resultado em ordem alfabetica e o usuario nao precisará
 digitar o nome todo para encontrar o evento*/
 
-//Seçao
-class Model{
-    private:
-        string user;
-        string pass;
-        no *arvore;
-        lista *l;
-    public:
-        Model(){
-            user = "admin";
-            pass = "admin";
-            arvore = NULL;
-            l = NULL;
-        }
+void libera();
 
-        //Os eventos estarao ordenados por nome
-        void inserirEventoArvore(Evento *e);
-        //Os eventos estarao ordenados por data
-        void inserirEventoLista(Evento *e);
-        /*TODO: Funções para busca de evento, criar a lista de eventos(ou arvore vide a forma de busca)
-        Função para remover.
-        A função de busca irá sempre retornar o ondereço do registo, pois, caso seja para ser exibido,
-        o Presenter consegue repassar as informações para a view, e caso seja remoção, o presenter consiga
-        pedir ao model que remova o endereço.
-
-        Caso seja inserido um evento com uma data no passado, exibir erro
-        */
-
-        bool autentica(string u, string p);
-};
 
 #endif
