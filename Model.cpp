@@ -27,14 +27,48 @@ int Data::getAno(){
 string Data::getData(){
     string d,m,a;
 
-    d = dia + '0';
-    m = mes + '0';
-    a = ano + '0';
+    d = to_string(dia);
+    m = to_string(mes);
+    a = to_string(ano);
 
     d.insert(d.begin(), 2 - d.length(), '0');
     m.insert(m.begin(), 2 - m.length(), '0');
+    a.insert(a.begin(), 4 - a.length(), '0');
 
-    return d + "/" + m + "/" + a;
+
+
+    if (inverse){
+        return a + "/" + m + "/" + d;
+    } else return d + "/" + m + "/" + a;
+}
+
+
+void Data::setCampos(string data){
+    istringstream dia(data.substr(0,2));
+    istringstream mes(data.substr(3,2));
+    istringstream ano(data.substr(6,4));
+    int dados;
+
+    dia >> dados;
+
+    setDia(dados);
+
+    mes >> dados;
+
+    setMes(dados);
+
+    ano >> dados;
+
+    setAno(dados);
+}
+
+void autenticaUsuario(string user, string pass){
+    string login = "admin";
+    string senha = "admin";
+
+    if (user == login && pass == senha){
+        autenticado = true;
+    }
 }
 
 Evento * criaEvento(){
@@ -43,7 +77,11 @@ Evento * criaEvento(){
     return evento;
 }
 
-void inserirEventoData(Evento *evento){
+void changeInverse(){
+    inverse = !inverse;
+}
+
+void inserirEvento(Evento *evento){
     lista *aux = (lista *)malloc(sizeof(lista));
     lista *temp;
     bool inseriu = false;
@@ -53,19 +91,21 @@ void inserirEventoData(Evento *evento){
     aux->prox = NULL;
     aux->evento = evento;
 
-    if (l!=NULL){
-        temp = l;
+    if (listaEventos!=NULL){
+        temp = listaEventos;
+        changeInverse();
 
-        if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+        if (temp->evento->dataInicio->getData() > aux->evento->dataInicio->getData()){
             aux->prox = temp;
             temp->ant = aux;
-            l = aux;
+            listaEventos = aux;
         } else {
             while (!inseriu){
                 if (temp->prox != NULL){
                     temp = temp->prox;
 
-                    if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+                    if (temp->evento->dataInicio->getData() > aux->evento->dataInicio->getData()){
+
                         aux->prox = temp;
                         aux->ant = temp->ant;
                         temp->ant->prox = aux;
@@ -80,33 +120,148 @@ void inserirEventoData(Evento *evento){
             }
 
         }
+
+        changeInverse();
     } else {
-        l = aux;
+        listaEventos = aux;
     }
 }
 
-void inserirEventoNome(Evento *evento){
+void incQtdEventos(){
+    tamanhoLista++;
+}
+
+void decQtdEventos(){
+    tamanhoLista--;
+}
+
+void gravaLista(){
+    ofstream arq;
+    lista *temp = listaEventos;
+
+
+    arq.open("Eventos.txt");
+    arq << tamanhoLista << endl;
+
+    while (temp!=NULL){
+        arq << temp->evento->getNome() << endl << temp->evento->getLocal() << endl << temp->evento->dataInicio->getData() << endl <<
+        temp->evento->dataFim->getData() << endl << temp->evento->getDesc() << endl;
+        temp = temp->prox;
+    }
+
+    arq.close();
+
 
 }
 
-//Os eventos estarao ordenados por nome
-void Model::inserirEventoArvore(Evento *e){
+int recuperaLista(){
+    ifstream arq;
+    Evento *evento;
+    string dados;
+    string tamanho;
+
+    arq.open("Eventos.txt");
+
+    if (arq.is_open()){
+        int i=0;
+
+        getline(arq,tamanho);
+
+        tamanhoLista = stoi(tamanho);
+
+        while (i<tamanhoLista){
+            evento = new Evento();
+
+            getline(arq, dados);
+            evento->setNome(dados);
+
+            getline(arq, dados);
+            evento->setLocal(dados);
+
+
+            getline(arq, dados);
+            evento->dataInicio->setCampos(dados);
+
+            getline(arq, dados);
+            evento->dataFim->setCampos(dados);
+
+
+            getline(arq, dados);
+            evento->setDesc(dados);
+
+            inserirEvento(evento);
+            evento = NULL;
+            i++;
+        }
+
+        arq.close();
+    }
+
+    return tamanhoLista;
 
 }
-//Os eventos estarao ordenados por data
-void Model::inserirEventoLista(Evento *e){
 
+void liberaLista(){
+    lista *temp;
+
+    temp = listaEventos;
+
+    while (listaEventos!=NULL){
+        listaEventos = listaEventos->prox;
+
+        free(temp->evento->dataInicio);
+        free(temp->evento->dataFim);
+        free(temp->evento);
+        free (temp);
+
+        temp = listaEventos;
+    }
 }
-/*TODO: Funções para busca de evento, criar a lista de eventos(ou arvore vide a forma de busca)
-Função para remover.
-A função de busca irá sempre retornar o ondereço do registo, pois, caso seja para ser exibido,
-o Presenter consegue repassar as informações para a view, e caso seja remoção, o presenter consiga
-pedir ao model que remova o endereço.
+
+void getByName(string nome){
+    lista *temp;
+
+    temp = listaEventos;
+
+    while(temp != NULL){
+        if (nome == temp->evento->getNome()){
+            temp->evento->changeVisibility();
+        }
+        temp = temp->prox;
+    }
+}
+
+void getByDate(Data data){
+    lista *temp;
+
+    temp = listaEventos;
+
+    while(temp != NULL){
+        if (data.getData() == temp->evento->dataInicio->getData()){
+            temp->evento->changeVisibility();
+        }
+        temp = temp->prox;
+    }
+}
+
+void removeEvent(){
+    lista *temp = eventoRemover;
+    lista *aux;
+
+    if (temp->ant != NULL){
+        aux = temp->ant;
+        aux->prox = temp->prox;
+        if(temp->prox!=NULL) temp->prox->ant = aux;
+        free(temp);
+    } else {
+        listaEventos = temp->prox;
+        if (listaEventos != NULL) listaEventos->ant = NULL;
+        free(temp);
+    }
+}
+
+/*TODO: Função para remover.
 
 Caso seja inserido um evento com uma data no passado, exibir erro
 */
 
-bool Model::autentica(string u, string p){
-    if (user == u && pass == p) return true;
-    return false;
-}

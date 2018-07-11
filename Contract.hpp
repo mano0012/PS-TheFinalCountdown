@@ -8,7 +8,9 @@ using namespace std;
 
 typedef enum {
     MENU = 0,
-    INSERE = 1
+    INSERE = 1,
+    LISTAR = 2,
+    REMOVER = 3
 } classView;
 
 
@@ -24,14 +26,20 @@ class ContractView{
 
             setPresenter();
         }
+
+        //virtual void showExecutionError(string name) = 0;
+
+        virtual void deletePresenter() = 0;
 };
 //Fim
 
 //Contrato-Menu
 class ContractMenuView : public ContractView{
     public:
-        public:
-                virtual int showMenu() = 0;
+            virtual int showAdminMenu() = 0;
+            virtual int showMenu() = 0;
+            virtual void endOfLife() = 0;
+            virtual void showExecutionError(string name) = 0;
 };
 
 class ContractMenuPresenter{
@@ -45,7 +53,7 @@ class ContractMenuPresenter{
 //Contrato InserirEvento
 class ContractInsereView : public ContractView{
     public:
-        virtual void criaEvento(Evento *evento) = 0; //Utilizar Builder
+        virtual void criaEvento(Evento *evento) = 0;
 
 };
 
@@ -58,40 +66,55 @@ class ContractInserePresenter {
 };
 //Fim ContratoInserirEvento
 
-//Contrato BuscarEvento
-class ContractBuscaView : public ContractView {
+//Inicio ContratoListarEventos
+class ContractListaView : public ContractView {
     public:
-        int mostraMenu();
 
-        Data * buscaEventoData();
+        virtual void mostraEvento(Evento *evento, int id) = 0;
 
-        string buscaEventoNome();
+        virtual int showMenu() = 0;
+
+        virtual void setRemover() = 0;
+
+        virtual void mostrarDetalhes(Evento *evento) = 0;
+
+        virtual string buscaNome() = 0;
+
+        virtual Data buscaData() = 0;
+
+        virtual int selectEvents() = 0;
+
+        virtual  void noEvents() = 0;
+};
+
+
+class ContractListaPresenter {
+    public:
+        ContractListaView *view;
+
+        virtual void setView(ContractListaView *v) = 0;
+
+        virtual void start(bool remover) = 0;
+
+};
+//Fim ContratoListarEventos
+
+class ContractRemoverView : public ContractView {
+    public:
+        ContractListaView *view;
+        virtual void removerEvento() = 0;
+        virtual void errorMessage() = 0;
 
 };
 
-class ContractBuscaPresenter {
+class ContractRemoverPresenter {
     public:
-        ContractBuscaView *view;
+        ContractRemoverView *view;
 
-        virtual void setView(ContractBuscaView *v) = 0;
+        virtual void setView(ContractRemoverView *v) = 0;
 
         virtual void start() = 0;
 
-        virtual void buscaData(Data *data);
-
-        virtual void buscaNome(string nome);
 };
-
-
-//Contrato MostrarEvento
-/*class ContractMostraEvento : public ContractView{
-    public:
-
-
-};*/
-
-
-
-
 
 #endif
