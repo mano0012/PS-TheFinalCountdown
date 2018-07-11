@@ -27,14 +27,33 @@ int Data::getAno(){
 string Data::getData(){
     string d,m,a;
 
-    d = dia + '0';
-    m = mes + '0';
-    a = ano + '0';
+    d = to_string(dia);
+    m = to_string(mes);
+    a = to_string(ano);
 
     d.insert(d.begin(), 2 - d.length(), '0');
     m.insert(m.begin(), 2 - m.length(), '0');
 
     return d + "/" + m + "/" + a;
+}
+
+void Data::setCampos(string data){
+    istringstream dia(data.substr(0,2));
+    istringstream mes(data.substr(3,2));
+    istringstream ano(data.substr(6,4));
+    int dados;
+
+    dia >> dados;
+
+    setDia(dados);
+
+    mes >> dados;
+
+    setMes(dados);
+
+    ano >> dados;
+
+    setAno(dados);
 }
 
 Evento * criaEvento(){
@@ -85,30 +104,70 @@ void inserirEvento(Evento *evento){
     }
 }
 
-void gravaLista(){
-    FILE *arq;
+void gravaLista(int qtdEventos){
+    ofstream arq;
     lista *temp = listaEventos;
 
-    arq = fopen("Eventos.txt","wb");
+    if (temp!=NULL){
+        arq.open("Eventos.txt");
+        arq << qtdEventos << endl;
+        while (temp!=NULL){
+            arq << temp->evento->getNome() << endl << temp->evento->getLocal() << endl << temp->evento->dataInicio->getData() << endl <<
+            temp->evento->dataFim->getData() << endl << temp->evento->getDesc() << endl;
+            temp = temp->prox;
+        }
 
-    while (temp!=NULL){
-        fwrite(temp->evento,sizeof(Evento),1,arq);
-        temp = temp->prox;
+        arq.close();
     }
+
 }
 
-void recuperaLista(){
-    FILE *arq;
-    Evento *evento = new Evento;
+int recuperaLista(){
+    ifstream arq;
+    Evento *evento;
+    string dados;
+    string tamanho;
+    int tamanhoLista = 0;
 
-    arq = fopen("Eventos.txt","rb");
+    arq.open("Eventos.txt");
 
-    if (arq!=NULL){
-        while (!feof(arq)){
-            fread(evento,sizeof(Evento),1,arq);
+    if (arq.is_open()){
+        int i=0;
+
+        getline(arq,tamanho);
+
+        tamanhoLista = stoi(tamanho);
+
+        while (i<tamanhoLista){
+            evento = new Evento();
+
+            getline(arq, dados);
+            evento->setNome(dados);
+
+            getline(arq, dados);
+            evento->setLocal(dados);
+
+
+            getline(arq, dados);
+            evento->dataInicio->setCampos(dados);
+
+            getline(arq, dados);
+            evento->dataFim->setCampos(dados);
+
+
+            getline(arq, dados);
+            evento->setDesc(dados);
+
             inserirEvento(evento);
+            evento = NULL;
+            i++;
         }
+
+        arq.close();
     }
+
+    return tamanhoLista;
+
 }
 
 void libera(){
@@ -121,21 +180,39 @@ void libera(){
         free (temp);
         temp = listaEventos;
     }
+}
 
-    temp = listaBusca;
+void getByName(string nome){
+    lista *temp;
 
-    while (listaBusca != NULL){
-        listaBusca = listaBusca->prox;
-        free (temp);
-        temp = listaBusca;
+    temp = listaEventos;
+
+    cout << "NOME: " << nome << endl;
+    while(temp != NULL){
+        cout << "EventName: " << temp->evento->getNome() << endl;
+        if (nome == temp->evento->getNome()){
+            cout << "MATCH" << endl;
+            temp->evento->changeVisibility();
+        }
+        temp = temp->prox;
     }
 }
 
-/*TODO: Funções para busca de evento, criar a lista de eventos(ou arvore vide a forma de busca)
-Função para remover.
-A função de busca irá sempre retornar o ondereço do registo, pois, caso seja para ser exibido,
-o Presenter consegue repassar as informações para a view, e caso seja remoção, o presenter consiga
-pedir ao model que remova o endereço.
+void getByDate(Data data){
+    lista *temp;
+
+    temp = listaEventos;
+
+    while(temp != NULL){
+        if (data.getData() == temp->evento->dataInicio->getData()){
+            temp->evento->changeVisibility();
+            cout << "SETOU" << endl;
+        }
+        temp = temp->prox;
+    }
+}
+
+/*TODO: Função para remover.
 
 Caso seja inserido um evento com uma data no passado, exibir erro
 */

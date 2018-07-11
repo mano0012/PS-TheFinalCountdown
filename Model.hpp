@@ -25,31 +25,57 @@ class Data{
         int getAno();
 
         string getData();
+
+        void setCampos(string data);
 };
 
 
-//isVisible é setado para true somente quando ele será mostrado, ou seja, quando uma pesquisa é feita
-//Isso é para poder mostrar os eventos em uma determinada data em ordem alfabetica
-//Ou eventos com um determinado nome em ordem de data
 class Evento{
-    public:
+    private:
         string nome;
         string local;
         string desc;
+    public:
         Data *dataInicio;
         Data *dataFim;
-        bool isVisible;
+        bool visible;
 
         Evento(){
             dataInicio = new Data;
             dataFim = new Data;
         }
 
-        /*void setNome(string nome){
-            this.nome = nome;
-        }*/
+        void setNome(string name){
+            nome = name;
+        }
 
-        //Terminar o evento
+        void setLocal(string place){
+            local = place;
+        }
+
+        void setDesc(string descricao){
+            desc = descricao;
+        }
+
+        string getNome(){
+            return nome;
+        }
+
+        string getLocal(){
+            return local;
+        }
+
+        string getDesc(){
+            return desc;
+        }
+
+        bool isVisible(){
+            return visible;
+        }
+
+        void changeVisibility(){
+            visible = !visible;
+        }
 
 };
 
@@ -66,11 +92,6 @@ typedef struct b {
 } lista;
 
 lista *listaEventos = NULL;
-lista *listaBusca = NULL;
-//Para armazenar de acordo com a data, utilizar apenas uma lista
-//Para armazenar de acordo com o nome, utilizar Árvore
-/*A arvore ajudará a dar o resultado em ordem alfabetica e o usuario nao precisará
-digitar o nome todo para encontrar o evento*/
 
 void libera();
 

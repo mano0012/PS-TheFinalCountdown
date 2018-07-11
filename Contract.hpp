@@ -47,7 +47,7 @@ class ContractMenuPresenter{
 //Contrato InserirEvento
 class ContractInsereView : public ContractView{
     public:
-        virtual void criaEvento(Evento *evento) = 0; //Utilizar Builder
+        virtual void criaEvento(Evento *evento) = 0;
 
 };
 
@@ -63,13 +63,21 @@ class ContractInserePresenter {
 //Inicio ContratoListarEventos
 class ContractListaView : public ContractView {
     public:
-        virtual int mostraListaEventos(lista *eventos) = 0;
+
+        virtual void mostraEvento(Evento *evento, int id) = 0;
+
         virtual int showMenu() = 0;
-        virtual void mostraEventoEspecifico = 0;
-        virtual string buscaNome = 0;
 
+        virtual void mostrarDetalhes(Evento *evento) = 0;
 
-}
+        virtual string buscaNome() = 0;
+
+        virtual Data buscaData() = 0;
+
+        virtual int selectEvents() = 0;
+
+        virtual  void noEvents() = 0;
+};
 
 
 class ContractListaPresenter {
@@ -77,51 +85,9 @@ class ContractListaPresenter {
         ContractListaView *view;
 
         virtual void setView(ContractListaView *v) = 0;
-        virtual void start() = 0;
-
-
-
-}
-
-
-
-
-
-
-//Contrato BuscarEvento
-class ContractBuscaView : public ContractView {
-    public:
-        int mostraMenu();
-
-        Data * buscaEventoData();
-
-        string buscaEventoNome();
-
-};
-
-class ContractBuscaPresenter {
-    public:
-        ContractBuscaView *view;
-
-        virtual void setView(ContractBuscaView *v) = 0;
 
         virtual void start() = 0;
 
-        virtual void buscaData(Data *data);
-
-        virtual void buscaNome(string nome);
 };
-
-
-//Contrato MostrarEvento
-/*class ContractMostraEvento : public ContractView{
-    public:
-
-
-};*/
-
-
-
-
 
 #endif

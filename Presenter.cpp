@@ -32,14 +32,31 @@ class inserePresenter : public ContractInserePresenter{
         }
 
         void start(){
+            int qtdEventos;
             evento = criaEvento();
             view->criaEvento(evento);
+
+            //Refaz o arquivo de eventos
+            qtdEventos = recuperaLista();
             inserirEvento(evento);
+            qtdEventos++;
+
+            gravaLista(qtdEventos);
+
+            libera();
+
             view->changeView(MENU);
         }
 };
 
 class listaPresenter : public ContractListaPresenter {
+    private:
+        int numEvento;
+        int id = 1;
+        string nome;
+        Data dataEvento;
+        lista *temp;
+
     public:
 
         void setView(ContractListaView *v){
@@ -47,21 +64,64 @@ class listaPresenter : public ContractListaPresenter {
         }
 
         void start(){
-            int numEvento;
-            switch(view->showMenu()){
-                case 1:
-                    string nome;
-                    nome = view->buscaNome();
-                    numEvento = view->mostraListaEventos(getByName(nome));
-                break;
-                case 2:
-                    Data dataEvento;
-                    dataEvento = view->buscaData();
-                    numEvento = view->mostraListaEventos(getByDate(dataEvento));
-                break;
+            recuperaLista();
+            lista *temp = listaEventos;
+
+            if (temp!=NULL){
+                switch(view->showMenu()){
+                    case 1:
+                        nome = view->buscaNome();
+                        getByName(nome);
+                        while(temp!=NULL){
+                            if (temp->evento->isVisible()){
+                                temp->evento->changeVisibility();
+                                view->mostraEvento(temp->evento,id);
+                            }
+                            id++;
+                            temp = temp->prox;
+                        }
+
+                    break;
+
+                    case 2:
+                        dataEvento = view->buscaData();
+                        getByDate(dataEvento);
+
+                        while(temp!=NULL){
+                            if (temp->evento->isVisible()){
+                                temp->evento->changeVisibility();
+                                view->mostraEvento(temp->evento,id);
+                            }
+                            id++;
+                            temp = temp->prox;
+                        }
+                    break;
+
+                    case 3:
+                        while(temp!=NULL){
+                            view->mostraEvento(temp->evento,id);
+                            id++;
+                            temp = temp->prox;
+                        }
+                    break;
+                }
+
+                numEvento = view->selectEvents();
+                if (numEvento != 0){
+                    lista *temp = listaEventos;
+                    for (int i=1;i<numEvento && temp!=NULL;i++) temp = temp->prox;
+
+                    if (temp!=NULL) view->mostrarDetalhes(temp->evento);
+                }
+
+                libera();
+            } else {
+                view->noEvents();
             }
+
+            view->changeView(MENU);
         }
 
-}
+};
 
 #endif
