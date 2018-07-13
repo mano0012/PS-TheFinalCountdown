@@ -52,7 +52,7 @@ class menuView : public ContractMenuView {
         }
 
         void endOfLife(){
-            cout << endl << "Gerenciamento de eventos utilizando arquitetura MVP\nDesenvolvido por: Luiz Gustavo e Marcos Vinicius" << endl;
+            cout << endl << "Gerenciamento de eventos utilizando arquitetura MVP\nDesenvolvido por: Luiz Gustavo e Marcos Souza" << endl;
         }
 
         void showExecutionError(string name){

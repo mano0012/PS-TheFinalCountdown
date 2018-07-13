@@ -259,9 +259,3 @@ void removeEvent(){
         free(temp);
     }
 }
-
-/*TODO: Função para remover.
-
-Caso seja inserido um evento com uma data no passado, exibir erro
-*/
-

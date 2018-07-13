@@ -64,13 +64,15 @@ class inserePresenter : public ContractInserePresenter{
 class listaPresenter : public ContractListaPresenter {
     private:
         int numEvento;
-        int id = 1;
+        int id;
         string nome;
         Data dataEvento;
         lista *temp;
 
     public:
-
+        listaPresenter(){
+            id = 1;
+        }
         void setView(ContractListaView *v){
             view = v;
         }
