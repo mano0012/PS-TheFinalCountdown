@@ -25,31 +25,57 @@ class Data{
         int getAno();
 
         string getData();
+
+        void setCampos(string data);
 };
 
 
-//isVisible é setado para true somente quando ele será mostrado, ou seja, quando uma pesquisa é feita
-//Isso é para poder mostrar os eventos em uma determinada data em ordem alfabetica
-//Ou eventos com um determinado nome em ordem de data
 class Evento{
-    public:
-        int id;
+    private:
         string nome;
         string local;
+        string desc;
+    public:
         Data *dataInicio;
         Data *dataFim;
-        bool isVisible;
+        bool visible;
 
         Evento(){
             dataInicio = new Data;
             dataFim = new Data;
         }
 
-        /*void setNome(string nome){
-            this.nome = nome;
-        }*/
+        void setNome(string name){
+            nome = name;
+        }
 
-        //Terminar o evento
+        void setLocal(string place){
+            local = place;
+        }
+
+        void setDesc(string descricao){
+            desc = descricao;
+        }
+
+        string getNome(){
+            return nome;
+        }
+
+        string getLocal(){
+            return local;
+        }
+
+        string getDesc(){
+            return desc;
+        }
+
+        bool isVisible(){
+            return visible;
+        }
+
+        void changeVisibility(){
+            visible = !visible;
+        }
 
 };
 
@@ -65,42 +91,14 @@ typedef struct b {
     struct b *ant;
 } lista;
 
-lista *l = NULL;
+lista *listaEventos = NULL;
+lista *eventoRemover = NULL;
+bool autenticado = false;
+bool inverse = false;
 
-//Para armazenar de acordo com a data, utilizar apenas uma lista
-//Para armazenar de acordo com o nome, utilizar Árvore
-/*A arvore ajudará a dar o resultado em ordem alfabetica e o usuario nao precisará
-digitar o nome todo para encontrar o evento*/
+int tamanhoLista = 0;
 
-//Seçao
-class Model{
-    private:
-        string user;
-        string pass;
-        no *arvore;
-        lista *l;
-    public:
-        Model(){
-            user = "admin";
-            pass = "admin";
-            arvore = NULL;
-            l = NULL;
-        }
+void liberaLista();
 
-        //Os eventos estarao ordenados por nome
-        void inserirEventoArvore(Evento *e);
-        //Os eventos estarao ordenados por data
-        void inserirEventoLista(Evento *e);
-        /*TODO: Funções para busca de evento, criar a lista de eventos(ou arvore vide a forma de busca)
-        Função para remover.
-        A função de busca irá sempre retornar o ondereço do registo, pois, caso seja para ser exibido,
-        o Presenter consegue repassar as informações para a view, e caso seja remoção, o presenter consiga
-        pedir ao model que remova o endereço.
-
-        Caso seja inserido um evento com uma data no passado, exibir erro
-        */
-
-        bool autentica(string u, string p);
-};
 
 #endif
