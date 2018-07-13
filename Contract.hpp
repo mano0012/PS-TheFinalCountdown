@@ -9,7 +9,8 @@ using namespace std;
 typedef enum {
     MENU = 0,
     INSERE = 1,
-    LISTAR = 2
+    LISTAR = 2,
+    REMOVER = 3
 } classView;
 
 
@@ -25,15 +26,20 @@ class ContractView{
 
             setPresenter();
         }
+
+        //virtual void showExecutionError(string name) = 0;
+
+        virtual void deletePresenter() = 0;
 };
 //Fim
 
 //Contrato-Menu
 class ContractMenuView : public ContractView{
     public:
-        public:
-                virtual int showMenu() = 0;
-                virtual void endOfLife() = 0;
+            virtual int showAdminMenu() = 0;
+            virtual int showMenu() = 0;
+            virtual void endOfLife() = 0;
+            virtual void showExecutionError(string name) = 0;
 };
 
 class ContractMenuPresenter{
@@ -68,6 +74,8 @@ class ContractListaView : public ContractView {
 
         virtual int showMenu() = 0;
 
+        virtual void setRemover() = 0;
+
         virtual void mostrarDetalhes(Evento *evento) = 0;
 
         virtual string buscaNome() = 0;
@@ -85,6 +93,25 @@ class ContractListaPresenter {
         ContractListaView *view;
 
         virtual void setView(ContractListaView *v) = 0;
+
+        virtual void start(bool remover) = 0;
+
+};
+//Fim ContratoListarEventos
+
+class ContractRemoverView : public ContractView {
+    public:
+        ContractListaView *view;
+        virtual void removerEvento() = 0;
+        virtual void errorMessage() = 0;
+
+};
+
+class ContractRemoverPresenter {
+    public:
+        ContractRemoverView *view;
+
+        virtual void setView(ContractRemoverView *v) = 0;
 
         virtual void start() = 0;
 

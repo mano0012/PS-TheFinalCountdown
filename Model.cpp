@@ -33,9 +33,15 @@ string Data::getData(){
 
     d.insert(d.begin(), 2 - d.length(), '0');
     m.insert(m.begin(), 2 - m.length(), '0');
+    a.insert(a.begin(), 4 - a.length(), '0');
 
-    return d + "/" + m + "/" + a;
+
+
+    if (inverse){
+        return a + "/" + m + "/" + d;
+    } else return d + "/" + m + "/" + a;
 }
+
 
 void Data::setCampos(string data){
     istringstream dia(data.substr(0,2));
@@ -56,10 +62,23 @@ void Data::setCampos(string data){
     setAno(dados);
 }
 
+void autenticaUsuario(string user, string pass){
+    string login = "admin";
+    string senha = "admin";
+
+    if (user == login && pass == senha){
+        autenticado = true;
+    }
+}
+
 Evento * criaEvento(){
     Evento *evento = new Evento;
 
     return evento;
+}
+
+void changeInverse(){
+    inverse = !inverse;
 }
 
 void inserirEvento(Evento *evento){
@@ -74,8 +93,9 @@ void inserirEvento(Evento *evento){
 
     if (listaEventos!=NULL){
         temp = listaEventos;
+        changeInverse();
 
-        if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+        if (temp->evento->dataInicio->getData() > aux->evento->dataInicio->getData()){
             aux->prox = temp;
             temp->ant = aux;
             listaEventos = aux;
@@ -84,7 +104,8 @@ void inserirEvento(Evento *evento){
                 if (temp->prox != NULL){
                     temp = temp->prox;
 
-                    if (temp->evento->dataInicio->getDia() > aux->evento->dataInicio->getDia()){
+                    if (temp->evento->dataInicio->getData() > aux->evento->dataInicio->getData()){
+
                         aux->prox = temp;
                         aux->ant = temp->ant;
                         temp->ant->prox = aux;
@@ -99,26 +120,37 @@ void inserirEvento(Evento *evento){
             }
 
         }
+
+        changeInverse();
     } else {
         listaEventos = aux;
     }
 }
 
-void gravaLista(int qtdEventos){
+void incQtdEventos(){
+    tamanhoLista++;
+}
+
+void decQtdEventos(){
+    tamanhoLista--;
+}
+
+void gravaLista(){
     ofstream arq;
     lista *temp = listaEventos;
 
-    if (temp!=NULL){
-        arq.open("Eventos.txt");
-        arq << qtdEventos << endl;
-        while (temp!=NULL){
-            arq << temp->evento->getNome() << endl << temp->evento->getLocal() << endl << temp->evento->dataInicio->getData() << endl <<
-            temp->evento->dataFim->getData() << endl << temp->evento->getDesc() << endl;
-            temp = temp->prox;
-        }
 
-        arq.close();
+    arq.open("Eventos.txt");
+    arq << tamanhoLista << endl;
+
+    while (temp!=NULL){
+        arq << temp->evento->getNome() << endl << temp->evento->getLocal() << endl << temp->evento->dataInicio->getData() << endl <<
+        temp->evento->dataFim->getData() << endl << temp->evento->getDesc() << endl;
+        temp = temp->prox;
     }
+
+    arq.close();
+
 
 }
 
@@ -127,7 +159,6 @@ int recuperaLista(){
     Evento *evento;
     string dados;
     string tamanho;
-    int tamanhoLista = 0;
 
     arq.open("Eventos.txt");
 
@@ -170,14 +201,19 @@ int recuperaLista(){
 
 }
 
-void libera(){
+void liberaLista(){
     lista *temp;
 
     temp = listaEventos;
 
     while (listaEventos!=NULL){
         listaEventos = listaEventos->prox;
+
+        free(temp->evento->dataInicio);
+        free(temp->evento->dataFim);
+        free(temp->evento);
         free (temp);
+
         temp = listaEventos;
     }
 }
@@ -187,11 +223,8 @@ void getByName(string nome){
 
     temp = listaEventos;
 
-    cout << "NOME: " << nome << endl;
     while(temp != NULL){
-        cout << "EventName: " << temp->evento->getNome() << endl;
         if (nome == temp->evento->getNome()){
-            cout << "MATCH" << endl;
             temp->evento->changeVisibility();
         }
         temp = temp->prox;
@@ -206,9 +239,24 @@ void getByDate(Data data){
     while(temp != NULL){
         if (data.getData() == temp->evento->dataInicio->getData()){
             temp->evento->changeVisibility();
-            cout << "SETOU" << endl;
         }
         temp = temp->prox;
+    }
+}
+
+void removeEvent(){
+    lista *temp = eventoRemover;
+    lista *aux;
+
+    if (temp->ant != NULL){
+        aux = temp->ant;
+        aux->prox = temp->prox;
+        if(temp->prox!=NULL) temp->prox->ant = aux;
+        free(temp);
+    } else {
+        listaEventos = temp->prox;
+        if (listaEventos != NULL) listaEventos->ant = NULL;
+        free(temp);
     }
 }
 

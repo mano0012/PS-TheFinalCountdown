@@ -3,9 +3,21 @@
 #include "Presenter.cpp"
 using namespace std;
 
-main(){
-    ContractView *v;
+int main(int argc, char *argv[]){
+    ContractMenuView *view;
 
-    v = FactoryView::cria(MENU);
-    v->start(NULL);
+    view = new menuView;
+
+    if (view!=NULL){
+        if (argc != 1 && argc != 3){
+            view->showExecutionError(argv[0]);
+            return (0);
+        }
+
+        if (argc == 3) autenticaUsuario(argv[1],argv[2]);
+
+        view->start(NULL);
+    }
+
+    return (0);
 }

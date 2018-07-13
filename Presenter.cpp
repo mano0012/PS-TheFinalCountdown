@@ -1,21 +1,34 @@
 #ifndef PRESENTER_HPP_
 #define PRESENTER_HPP_
 #include "Contract.hpp"
-//#include "Model.hpp"
+
 class menuPresenter : public ContractMenuPresenter{
     public:
         void start(){
-            switch(view->showMenu()){
-                case 0:
-                    libera();
-                    view->endOfLife();
-                break;
-                case 1:
-                    view->changeView(INSERE);
-                break;
-                case 2:
-                    view->changeView(LISTAR);//Mudar qual classe
-                break;
+            if (autenticado){
+                switch(view->showAdminMenu()){
+                    case 0:
+                        view->endOfLife();
+                    break;
+                    case 1:
+                        view->changeView(INSERE);
+                    break;
+                    case 2:
+                        view->changeView(LISTAR);
+                    break;
+                    case 3:
+                        view->changeView(REMOVER);
+                    break;
+                }
+            } else {
+                switch(view->showMenu()){
+                    case 0:
+                        view->endOfLife();
+                    break;
+                    case 1:
+                        view->changeView(LISTAR);
+                    break;
+                }
             }
         }
 
@@ -32,18 +45,17 @@ class inserePresenter : public ContractInserePresenter{
         }
 
         void start(){
-            int qtdEventos;
             evento = criaEvento();
             view->criaEvento(evento);
 
-            //Refaz o arquivo de eventos
-            qtdEventos = recuperaLista();
+            recuperaLista();
             inserirEvento(evento);
-            qtdEventos++;
 
-            gravaLista(qtdEventos);
+            incQtdEventos();
 
-            libera();
+            gravaLista();
+
+            liberaLista();
 
             view->changeView(MENU);
         }
@@ -63,7 +75,8 @@ class listaPresenter : public ContractListaPresenter {
             view = v;
         }
 
-        void start(){
+        void start(bool remover){
+            bool mostrouEvento = false;
             recuperaLista();
             lista *temp = listaEventos;
 
@@ -74,13 +87,13 @@ class listaPresenter : public ContractListaPresenter {
                         getByName(nome);
                         while(temp!=NULL){
                             if (temp->evento->isVisible()){
+                                mostrouEvento = true;
                                 temp->evento->changeVisibility();
                                 view->mostraEvento(temp->evento,id);
                             }
                             id++;
                             temp = temp->prox;
                         }
-
                     break;
 
                     case 2:
@@ -89,6 +102,7 @@ class listaPresenter : public ContractListaPresenter {
 
                         while(temp!=NULL){
                             if (temp->evento->isVisible()){
+                                mostrouEvento = true;
                                 temp->evento->changeVisibility();
                                 view->mostraEvento(temp->evento,id);
                             }
@@ -96,8 +110,8 @@ class listaPresenter : public ContractListaPresenter {
                             temp = temp->prox;
                         }
                     break;
-
                     case 3:
+                        mostrouEvento = true;
                         while(temp!=NULL){
                             view->mostraEvento(temp->evento,id);
                             id++;
@@ -106,22 +120,52 @@ class listaPresenter : public ContractListaPresenter {
                     break;
                 }
 
-                numEvento = view->selectEvents();
-                if (numEvento != 0){
-                    lista *temp = listaEventos;
-                    for (int i=1;i<numEvento && temp!=NULL;i++) temp = temp->prox;
+                if(mostrouEvento){
+                    numEvento = view->selectEvents();
 
-                    if (temp!=NULL) view->mostrarDetalhes(temp->evento);
-                }
+                    if (numEvento != 0){
+                        lista *temp = listaEventos;
+                        for (int i=1;i<numEvento && temp!=NULL;i++) temp = temp->prox;
 
-                libera();
-            } else {
-                view->noEvents();
-            }
+                        if (temp!=NULL){
+                            if (!remover){
+                                view->mostrarDetalhes(temp->evento);
+                            } else {
+                                eventoRemover = temp;
+                                return;
+                            }
+                        }
+                    }
+                } else view->noEvents();
+            } else view->noEvents();
+
+            liberaLista();
 
             view->changeView(MENU);
         }
 
+};
+
+class removerPresenter : public ContractRemoverPresenter{
+    public:
+        void setView(ContractRemoverView *v){
+            view = v;
+        }
+
+        void start(){
+            view->removerEvento();
+
+            if(eventoRemover!=NULL){
+                removeEvent();
+                decQtdEventos();
+                gravaLista();
+            } else {
+                view->errorMessage();
+            }
+
+            liberaLista();
+            view->changeView(MENU);
+        }
 };
 
 #endif

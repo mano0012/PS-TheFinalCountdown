@@ -92,8 +92,13 @@ typedef struct b {
 } lista;
 
 lista *listaEventos = NULL;
+lista *eventoRemover = NULL;
+bool autenticado = false;
+bool inverse = false;
 
-void libera();
+int tamanhoLista = 0;
+
+void liberaLista();
 
 
 #endif
