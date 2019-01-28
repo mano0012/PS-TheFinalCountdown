@@ -4,7 +4,7 @@ Trabalho final da disciplina Projeto de Software, ministrada pelo Prof. Me. Marc
 
 ## About
 
-ImplementaÁ„o em C++ de um sistema de gest„o de eventos similar ao que temos no site da UFG [https://www.ufg.br/events](https://www.ufg.br/events/) utilizando a arquitetura MVP e o padr„o de projeto Template Method
+Implementa√ß√£o em C++ de um sistema de gest√£o de eventos similar ao que temos no site da UFG [https://www.ufg.br/events](https://www.ufg.br/events/) utilizando a arquitetura MVP e o factoryMethod
 
 ## Authors+
 * **Luiz Mattos**  - [GitHub](https://github.com/mano0012)
